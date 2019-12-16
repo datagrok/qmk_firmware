@@ -1,4 +1,4 @@
-# a layout for the Mitosis
+# [datagrok](https://github.com/datagrok)'s layout for the Mitosis
 
 - Emphasis on momentary modifiers, all usable from either hand, arranged symmetrically, but left/right distinguishable by the OS.
   I place left- and right-versions of Shift, GUI ("Super"), and Alt ("Meta"), and Henkan/Muhenkan (which I plan to overload for "Hyper").
@@ -8,9 +8,9 @@
 
 - Red key and Blue key momentary-enable (like a shift key) one of three layers:
 
-    - Red: Symbols layer
-    - Blue: Numbers layer
-    - "Purple" (both Red and Blue): Functions layer
+    - Red: common symbols and arrow keys
+    - Blue: numbers arranged in a 10-key pad and function keys
+    - Purple ("Red and Blue"): "true number-pad", page up/page down/home/end, and uncommon functions
     
   This tri-state layer mechanism is a bit similar to Planck and Preonic's "Raise," "Lower," and "Adjust."
 
@@ -24,36 +24,46 @@
   Rationale: unmodded and shifted keys should be for prose, while symbols useful for programming should be colocated on their own layer.
 
 - Key positions chosen for mnemonics.
-  For example, you can distinguish between alphanumeric numerals and keypad numerals, but they occupy the same key positions.
+  For example, you can distinguish between alphanumeric numerals and number-pad numerals, but they occupy the same key positions.
 
-## Layout Images
+## Layers
+
+### Base
 
 ![mitosis:datagrok layout base layer](https://i.imgur.com/tap5Pjf.png)
 
-Base layer. Notes:
 - customized comma and period, which have exclamation point and question mark on their shift layer.
 - tap right-shift for underscore, tap left-shift for tab.
 
+### Red
+
+Intended for common navigation and programming symbols.
+
 ![mitosis:datagrok layout red layer](https://i.imgur.com/sMGr34T.png)
 
-Red layer. Intended for common navigation and programming symbols. Notes:
 - symmetric layout of paired braces/brackets/slashes for easier memorization
 - arrows placed directly on home position
 
+### Blue
+
+Intended for number-pad and function keys.
+
 ![mitosis:datagrok layout blue layer](https://i.imgur.com/dDb2563.png)
 
-Blue layer. Intended for "number pad." Notes:
-- Keycodes generated for numbers, enter key, and mathematical symbols are from the alphanumeric keys, not keypad.
+- Keycodes generated for numbers, enter key, and mathematical symbols are from the alphanumeric keys, not number-pad.
   This way they are not influenced by the state of Num Lock.
-  If you want to send the keypad equivalents, just press Blue as well to access keypad numbers in the same positions in the Purple layer.
+  If you want to send the number-pad equivalents, just press Blue as well to access number-pad numbers in the same positions in the Purple layer.
+
+### Purple
+
+"Red and Blue" layer. Intended for "true" number-pad and various functions.
 
 ![mitosis:datagrok layout purple layer](https://i.imgur.com/pESzy2u.png)
 
-Purple (Red+Blue) layer. Intended for "true keypad" and various functions. Notes:
-- Numbers on this layer send Keypad codes, so the result will be affected by the state of Num Lock.
+- Numbers on this layer send Number-pad codes, so the result will be affected by the state of Num Lock.
 - "Switch Layout" toggles the alphabet keys between QWERTY, Colemak, Dvorak, and Workman.
   Shift + "Switch Layout" stores the currently selected alphabet layout in eeprom, so the selection persists across reboots and computers.
-- Page Up / Page Down / Home / End are placed on corresponding arrow keys.
+- Adding blue to an arrow key from the red layer results in Page Up / Page Down / Home / End in an intuitive arrangement.
 
 Keyboard layout editor sources:
 [base](http://www.keyboard-layout-editor.com/#/gists/bc2d06a3203d1bc3a14ed2245cf39643)
@@ -65,13 +75,12 @@ Keyboard layout editor sources:
 
 ## Indicators
 
-- When Red layer is active, the RGB indicator turns red.
-- When Blue layer is active, the RGB indicator turns blue.
-- When Purple layer is active, the RGB indicator turns purple.
+- The RGB indicator turns red, blue, or purple to indicate when the red, blue, or purple layer is active.
 - When the Workman layer is active, the RGB indicator turns green.
-  Currently, this means that activating the Red layer while using the Workman layout will make the indicator show yellow. (red + green.)
+  Currently, this means that activating e.g. the Red layer while using the Workman layout will make the indicator show yellow. (red + green.)
 - The Num Lock status is shown on the Pro Micro tx LED.
-- If you attach a speaker to PC6 (pin 5) and compile with AUDIO_ENABLE=yes, music will be played at startup, when switching default layers, and when saving the default layer.
+- Caps Lock status is shown on the Pro Micro rx LED.
+- If you attach a speaker to Pro Micro pin 5 (PC6) and compile with AUDIO_ENABLE=yes, music will be played at startup, when switching default layers, and when saving the default layer.
 
 ## Variants
 
@@ -85,9 +94,15 @@ Swap Space onto bottom thumb row: swaps Red/Backspace/Space/Red with Blue/Shift/
 
 ```make mitosis:datagrok MITOSIS_DATAGROK_BOTTOMSPACE=yes```
 
-Lower baud UART. Useful when using an 8Mhz pro micro; corresponding changes required in wireless firmware. See rules.mk for details.
+Lower baud UART. Useful when using an 8Mhz Pro Micro; corresponding changes required in wireless firmware. See rules.mk for details.
 
 ```make mitosis:datagrok MITOSIS_DATAGROK_SLOWUART=yes```
+
+Green component of RGB LED on Pro Micro pin 4 (PD4).
+Enables the use of TWI/I2C devices, which need Pro Micro pin 3 (PD1).
+Modify your receiver hardware appropriately and compile with:
+
+```make mitosis:datagrok MITOSIS_DATAGROK_I2CHACK=yes```
 
 ## Design notes
 
@@ -129,20 +144,19 @@ Lower baud UART. Useful when using an 8Mhz pro micro; corresponding changes requ
 
   - Blue+Arrows = PgUp/PgDn/Home/End, which is intuitive for me and similar to what is done on Apple and some Dell keyboards.
 
-- The number pad: I placed the ten-key number pad on the Blue layer.
+- The number-pad: I placed the ten-key number-pad on the Blue layer.
   However, this would do the wrong thing when Num Lock was not enabled.
   Rather than attempt to manage the state of Num Lock, I arranged the normal number keys in a ten-key layout on the Blue layer instead.
-  If you explicitly want the keypad keys, they're in the same position on the Red+Blue layer.
+  If you explicitly want the number-pad keys, "just add Red."
+  (The number-pad keys are in corresponding positions on the Purple layer.)
 
-- Number-pad add, subtract, multiply, and divide are located on the same keys as alphanumeric plus, dash, asterisk, and slash, respectively.
+- Number-pad add, subtract, multiply, divide, and enter do not mimic a standard number-pad layout as the numerals do.
+  This is so they may share the same key positions as their alphanumeric key counterparts, where enter and slash are placed in a familiar position.
 
 - The Function-keys are arranged to mimic the order of the ten-key pad.
 
-- Enter is now in a more qwerty-familiar location, and may be activated with one hand.
-  Numpad Enter is in the same position for mnemonics.
-
 - Why do I dislike [snake\_case](https://en.wikipedia.org/wiki/Snake_case) (`__variable_names_that_use_underscores_`)?
-  Maybe because it's hard to type all those underscores requiring the shift key?
+  Maybe because it's hard to type all those underscores requiring the shift key with lowercase letters that don't?
   Hypothesis: I'll be less annoyed by snake case by placing `_` at an unmodded position, right near the `space` key.
 
 
@@ -150,12 +164,26 @@ Lower baud UART. Useful when using an 8Mhz pro micro; corresponding changes requ
 
 ### Current
 
+- The outer four thumb keys on each board aren't comfortable for use as modifiers.
+  Let's try mod-tap on the pinky alpha-keys for ctrl/alt/shift.
+  Note that this almost entirely abandons the use of four of the keys in the thumb-cluster, which is a significant departure from the previous version of this layout.
+  If I love it and you hate it, let me know, and I'll see about forking it to a new keymap.
+- To use TWI/I2C devices, I rerouted the green LED pin from Pro Micro pin 3 (PD1) to Pro Micro pin 4 (PD4). If you do the same, set `MITOSIS_DATAGROK_I2CHACK=yes`.
+- Abandoned increasingly incorrect tri-state layer names "Symbols"/"Numbers"/"Functions" ~~in favor of "Raise/Lower/Adjust" used by more popular boards.~~
+  Scratch that, I hated it.
+  Using "Red/Blue/Purple" instead for my tri-state layer names.
+- Bugfix: number-pad plus, minus, multiply, divide should be only on purple layer.
+- Display caps lock status on rx LED
+- More tinkering with the LED setting logic and macros but functionality hasn't changed much.
+
+### 0.6.107
+
 - Discard "intentionally difficult backspace" idea.
   Tab returns to left-shift.
-  Del returns to Red+Backspace
+  Del returns to Red+Backspace.
 - "High Profile mode:" Swap Red/Backspace/Space/Red with Blue/Shift/Shift/Blue (placing space on lower thumb keys) using `MITOSIS_DATAGROK_BOTTOMSPACE=yes` when compiling.
 - Move Print Screen / Scroll Lock / Pause to pinky column on Blue layer.
-- Let's try using TT instead of MO so we can e.g. lock-on the keypad.
+- Let's try using TT instead of MO so we can e.g. lock-on the number-pad.
   - We still use MO for first modifier, so e.g. Red + tapping Blue will lock purple.
     So far it feels a bit janky, we'll see.
 - One key `KC_LAYO` to cycle through available base layers instead of a dedicated key for each;
@@ -167,7 +195,7 @@ Lower baud UART. Useful when using an 8Mhz pro micro; corresponding changes requ
 ### 0.6.60
 
 - Experiment: no-modifier underscore on right shift key.
-- New combined numbers + keypad arrangement.
+- New combined numbers + number-pad arrangement.
   No more worrying about Num Lock key.
 - Move F-keys to left board to make room.
   Calling them "the Numbers layer" and "the Functions layer" is now less accurate but the arrangement feels better.
@@ -221,41 +249,46 @@ Lower baud UART. Useful when using an 8Mhz pro micro; corresponding changes requ
   "Since QWERTY and Workman keep angle brackets together, place other enclosing symbols on the same keys."
 
     - I didn't like having to pick the right modifier to get the right flavor of bracket.
-      Instead, now, one modifier activates a symbols layer where all brackets are easily accessible.
+      Instead, now, one modifier activates a layer where all brackets are easily accessible.
 
 - Abandoned: chorded Enter without proper chording detection
 
-    - I tried to make Red+Space = Enter with the intention that I could hit both with my thumb.
-      That didn't work well; I always trigger space first when mashing the keys
-      simultaneously. ~~This might not continue to be true if I change the angle
-      at which I strike the keys e.g. with a neoprene base or a wrist support.~~
+    - I tried to make Red+Space = Enter with the intention that I could hit both at once with one thumb.
+      That didn't work well; I would often trigger space first when mashing the keys simultaneously.
+      ~~This might not continue to be true if I change the angle at which I strike the keys e.g. with a neoprene base or a wrist support.~~
       Even with a wrist rest or low-profile, this is hard to do with one hand.
       Need to adjust the firmware to understand chorded thumb keys.
 
 ## To do
 
-- Ctrl+'+' doesn't seem to work; fix.
+- When audio is disabled, there's no indication of which keymap layer you're on, except solid green on workman.
+  Make this blink a pattern or something instead.
+- Mod-tap to share `Ctrl` with `A` might interfere with games that assume WASD-style controls.
+  But I never play games these days. :(
+  Figure out a workaround?
+  Maybe a "Gaming layer"?
 - **Shared Layouts.**
   Figure out how to make use of QMK's common `layouts/`
 - **Chorded Combos.**
   Since the thumb keys are arranged such that it's easy to smash pairs of keys with just one thumb, figure out how to enable chording.
   For example, a single-finger Shift+Space or Red+Space that doesn't do the wrong thing if Space happens to trigger first.
 - Improve **LED indications** (may require modding bluetooth firmware):
-    - Num Lock status
     - Is any board nonresponsive (which one?)
     - Does either board have a low battery?
+    - Use the green indicator for "status good" notifications, not for my favorite layout.
+      - Don't mix green with red/blue; turn them off first and turn them back on when done.
+    - Figure out how to blink patterns 
 - **Num Lock management.**
   Num lock currently occupies prime real estate, but I never use it except to fix it when it's wrong.
   Do any of my applications use it?
   Should I have the firmware ensure it is set how I want it?
   Maybe cause it to be momentary active with Blue?
   See [@drashna's comment](https://github.com/qmk/qmk_firmware/pull/2366#issuecomment-404951953) for code to force it always-on, which I don't know if I want.
-- ~~Store default layer in eeprom?~~
 - Allow "!? on ,." to be easily toggled-off.
 - Modularize "!? on ,." so it can be easily used on any QMK keyboard. (about half done)
-- See if the henkan/muhenkan placement is at all useful for Japanese speakers,
-  or abuse different keysyms for Left/Right Hyper. (Original space cadet used
-  scancodes 145/175. 145 is LANG2, 175 is "reserved" in USB HID spec.)
+- See if the henkan/muhenkan placement is at all useful for Japanese speakers, or abuse different keysyms for Left/Right Hyper.
+  (Original space cadet used scancodes 145/175.
+  145 is LANG2, 175 is "reserved" in USB HID spec.)
 - Implement "layer lock" key
 - Feature parity with popular boards e.g. Planck?
   - Layers for ~~Dvorak, Coleman,~~ Plover
@@ -263,12 +296,5 @@ Lower baud UART. Useful when using an 8Mhz pro micro; corresponding changes requ
   - Macros?
 - Improve tri-layer behavior
 - Find out what `update_tri_layer_state` offers that my simple layers arrangement lacks.
-- ~~Find a better location for Caps Lock, PrintScr/SysRq, Scroll Lock, Pause/Break,~~.
-  Placed on Blue layer. Caps will be Shift+"Layer Lock," once I get that working.
-- ~~Figure out where to place non-numpad numbers so we don't need num lock turned on to type them?~~
-- ~~Add Insert, PrintScr, Pause/Break~~
-- ~~Make QWERTY base layer for people who customize layout in software?~~
-  I default to QWERTY now.
-- ~~Mod a buzzer onto my receiver and enable tones~~ Easy and works!
 
 [Workman]: https://viralintrospection.wordpress.com/2010/09/06/a-different-philosophy-in-designing-keyboard-layouts/
