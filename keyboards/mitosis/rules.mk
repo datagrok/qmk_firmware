@@ -29,4 +29,4 @@ UNICODE_ENABLE = yes 		# Unicode
 # BLUETOOTH_ENABLE = yes # Enable Bluetooth with the Adafruit EZ-Key HID
 
 # # project specific files
-SRC = matrix.c
+SRC += matrix.c
